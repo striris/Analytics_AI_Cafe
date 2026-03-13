@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 1 · Meet Your AI</title>
+  <style>
+    :root{
+      --brand:#40ae59;
+      --brand-deep:#2f8f47;
+      --bean:#5d4037;
+      --espresso:#3a2a24;
+      --cream:#fbf5ec;
+      --foam:#fffaf3;
+      --latte:#f2e6d7;
+      --card:#fffdf9cc;
+      --line:#d8c6b4;
+      --ink:#2c241f;
+      --muted:#6c625c;
+      --shadow:0 16px 40px rgba(58,42,36,.12);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(64,174,89,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,64,55,.10), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.2)),
+        linear-gradient(180deg, #fdf8f1 0%, #f7efe3 100%);
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        linear-gradient(rgba(93,64,55,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,64,55,.35) 1px, transparent 1px);
+      background-size:22px 22px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 88%);
+    }
+
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px; position:relative; z-index:1}
+
+    .week-detail{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,250,243,.78)),
+        linear-gradient(180deg, rgba(64,174,89,.06), transparent);
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .week-detail:after{
+      content:"☕";
+      position:absolute;
+      right:22px;
+      top:14px;
+      font-size:64px;
+      opacity:.12;
+      transform:rotate(-8deg);
+    }
+
+    .week-pill,
+    .details-toggle,
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      border:1px solid rgba(64,174,89,.20);
+      color:var(--brand-deep);
+      font-weight:700;
+      letter-spacing:.2px;
+      text-decoration:none;
+    }
+
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(34px, 5vw, 62px);
+      line-height:1.02;
+      letter-spacing:-1.6px;
+    }
+
+    .subtitle{
+      max-width:760px;
+      margin:0;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    @media (max-width: 900px){
+      .detail-grid,
+      .agenda{grid-template-columns:1fr}
+    }
+
+    .outcome-card,
+    .card{
+      background:var(--card);
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:24px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+      box-shadow:var(--shadow);
+    }
+
+    .outcome-card h3{
+      margin:0 0 12px;
+      font-size:17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .bean{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--brand);
+      box-shadow:0 0 0 5px rgba(64,174,89,.12);
+      flex:0 0 auto;
+    }
+
+    .outcome-box{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(64,174,89,.12), rgba(64,174,89,.06));
+      border:1px solid rgba(64,174,89,.18);
+      font-weight:700;
+    }
+
+    .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+
+    .meta-chip,
+    .duration{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(93,64,55,.14);
+      color:var(--muted);
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .instructor{margin-top:14px; margin-bottom:12px; color:var(--brand-deep); font-size:15px; font-weight:600}
+    .week-header-actions{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px 2px 14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.6px;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted)
+    }
+
+    .agenda{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 34px rgba(58,42,36,.16);
+    }
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .number{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      color:var(--brand-deep);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+      min-width:42px;
+    }
+
+    .card h4{margin:0 0 10px; font-size:23px; line-height:1.2; letter-spacing:-.02em}
+    .card p{margin:0; color:var(--muted); line-height:1.7; font-size:16px}
+
+    .details-toggle{
+      margin-top:16px;
+      cursor:pointer;
+      font-size:13px;
+      transition:background .2s ease, transform .2s ease;
+    }
+
+    .details-toggle:hover,
+    .back-link:hover{background:rgba(64,174,89,.16); transform:translateY(-1px)}
+
+    .details-panel{
+      margin-top:16px;
+      padding:18px;
+      border-radius:18px;
+      background:#fffaf3;
+      border:1px solid rgba(93,64,55,.14);
+      display:none;
+    }
+
+    .details-panel.open{display:block}
+    .details-panel h5{margin:0 0 10px; font-size:16px; color:var(--ink)}
+    .details-panel p,
+    .details-panel li{color:var(--muted); line-height:1.7; font-size:15px}
+    .details-panel ul{margin:8px 0 14px 20px; padding:0}
+
+    .answer-box{
+      margin-top:10px;
+      padding:14px;
+      background:#ffffff;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:14px;
+      color:#355242;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="week-detail" id="week1-detail">
+      <div class="week-header-actions">
+        <div class="week-pill">☕ Analytics &amp; AI Cafe</div>
+        <a class="back-link" href="index.html">← Back to Cafe Menu</a>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <h1>Week 1 · Meet Your AI</h1>
+          <p class="subtitle">A practical, beginner-friendly session introducing ChatGPT, Copilot, and Claude through live demos, structured prompting, and everyday productivity workflows.</p>
+          <div class="meta">
+            <div class="meta-chip">📅 Date: Mar 13</div>
+            <div class="meta-chip">🧭 Format: 4 guided demos</div>
+            <div class="meta-chip">⏱️ Total Time: 60 min</div>
+          </div>
+          <div class="instructor">Instructor: Xinran Liu</div>
+        </div>
+
+        <aside class="outcome-card">
+          <h3><span class="bean"></span> Expected outcome</h3>
+          <div class="outcome-box">Participants can confidently configure AI tools, write structured prompts, and use AI for meetings, creativity, and daily productivity tasks.</div>
+        </aside>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Menu</h2>
+          <p>Follow along, click to expand, and practice as you go.</p>
+        </div>
+      </div>
+
+      <section class="agenda">
+        <article class="card" id="ai-settings-basics">
+          <div class="card-top">
+            <div class="number">1</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>AI Settings &amp; Security</h4>
+          <p>Learn the key ChatGPT settings, what they mean, and how to configure them safely. You will explore style settings, memory, and custom instructions, then test how small changes affect AI responses.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('settings-details', 'ai-settings-basics')">Show details &amp; tips</button>
+          <div class="details-panel" id="settings-details">
+            <h5>Key settings explained</h5>
+            <ul>
+              <li><strong>Base style and tone:</strong> Controls how ChatGPT writes responses. For example you can make it more formal, concise, or enthusiastic.</li>
+              <li><strong>Characteristics:</strong> Optional style adjustments such as warmth, enthusiasm, use of headers, or emojis.</li>
+              <li><strong>Memory:</strong> Allows ChatGPT to remember preferences about you over time so responses become more personalized.</li>
+              <li><strong>Custom instructions:</strong> A place where you tell ChatGPT permanent preferences about how it should respond.</li>
+            </ul>
+
+            <h5>Example custom instruction</h5>
+            <p>You can add simple rules that make responses easier to read or match your organization's writing style.</p>
+            <div class="answer-box">Do not use em-dash in responses.</div>
+
+            <h5>Security tip</h5>
+            <p>Avoid using personal ChatGPT Pro or free accounts for company work. These accounts are not managed by your organization and may store or train on your inputs. When you paste internal documents, meeting notes, or data into a personal AI tool, you may accidentally expose sensitive company information.</p>
+            <p>Instead, use your organization's approved AI tools where security, privacy, and data policies are managed by the company.</p>
+          </div>
+        </article>
+
+        <article class="card" id="creative-ai-use-case">
+          <div class="card-top">
+            <div class="number">2</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>Creative AI Exercise</h4>
+          <p>Try transforming or generating images using AI prompts. Copy one of the prompts below into your AI tool and experiment by changing styles, details, or mood.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('creative-details', 'creative-ai-use-case')">Show details &amp; tips</button>
+          <div class="details-panel" id="creative-details">
+            <h5>Exercise</h5>
+            <p>Copy and paste one of the prompts below into ChatGPT or another AI image tool. After generating the image, try modifying the prompt to see how the output changes.</p>
+
+            <h5>Prompt 1 — Style transformation</h5>
+            <div class="answer-box">Transform this image into a minimalist illustration style with soft pastel colors, clean lines, and a modern design aesthetic.</div>
+
+            <h5>Prompt 2 — Artistic style</h5>
+            <div class="answer-box">Transform this image into a watercolor painting with soft brush strokes, textured paper, and natural lighting.</div>
+
+            <h5>Prompt 3 — Futuristic version</h5>
+            <div class="answer-box">Reimagine this image in a futuristic cyberpunk style with neon lights, glowing colors, and a night city atmosphere.</div>
+
+            <h5>Prompt 4 — Pixar-style illustration</h5>
+            <div class="answer-box">Turn this image into a Pixar-style 3D animated illustration with expressive characters, soft lighting, and vibrant colors.</div>
+
+            <h5>Tips</h5>
+            <ul>
+              <li>Change the style words such as watercolor, cartoon, cinematic, or realistic.</li>
+              <li>Add details like lighting, background, mood, or time of day.</li>
+              <li>Try combining styles to see unexpected creative results.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card" id="copilot-for-meetings">
+          <div class="card-top">
+            <div class="number">3</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>Copilot for Meetings</h4>
+          <p>Use Copilot to automatically generate meeting notes and action items from recorded meetings.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('copilot-details', 'copilot-for-meetings')">Show details &amp; tips</button>
+          <div class="details-panel" id="copilot-details">
+            <h5>Detailed instructions</h5>
+            <ul>
+              <li>When running a meeting, start recording so Copilot can capture the discussion.</li>
+              <li>Let everyone know the meeting is being recorded.</li>
+              <li>Invite or enable the AI facilitator so Copilot can generate notes, action items, and follow-up tasks.</li>
+              <li>After the meeting, review the generated notes and check whether decisions and owners are correct.</li>
+              <li>You can also download the transcript and paste it into another AI tool to create customized summaries or reports.</li>
+            </ul>
+
+            <h5>Tips</h5>
+            <ul>
+              <li>State decisions clearly during the meeting so the AI captures them accurately.</li>
+              <li>Use the transcript if you want to generate different summary formats for different audiences.</li>
+              <li>Do a quick human review before sharing meeting notes widely.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card" id="prompt-like-a-pro">
+          <div class="card-top">
+            <div class="number">4</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>Prompt Like a Pro</h4>
+          <p>Practice structured prompting techniques by turning a weak prompt into a stronger one and testing the difference live.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('prompt-details', 'prompt-like-a-pro')">Show details, exercise &amp; answer</button>
+          <div class="details-panel" id="prompt-details">
+            <h5>How to prompt like a pro</h5>
+            <ul>
+              <li><strong>Give a clear role:</strong> Tell the AI who it should act as, such as a trainer, analyst, or meeting assistant.</li>
+              <li><strong>State the task:</strong> Be specific about what you want created, summarized, rewritten, or analyzed.</li>
+              <li><strong>Add context:</strong> Include audience, purpose, tone, and any background information that matters.</li>
+              <li><strong>Set constraints:</strong> Define length, format, style, and what to include or avoid.</li>
+              <li><strong>Ask for structure:</strong> Request bullets, tables, steps, or sections so the output is easy to use.</li>
+            </ul>
+
+            <h5>Exercise</h5>
+            <p>Rewrite this weak prompt into a stronger one:</p>
+            <div class="answer-box">“Help me write meeting notes.”</div>
+
+            <h5>Sample answer</h5>
+            <div class="answer-box">You are an executive assistant. Turn this meeting transcript into clear meeting notes for a busy project team. Include: 1) a 3-bullet summary, 2) key decisions made, 3) action items with owner and deadline, and 4) risks or follow-ups. Keep the tone professional and concise.</div>
+          </div>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    function toggleDetails(panelId, cardId) {
+      const panel = document.getElementById(panelId);
+      const button = document.querySelector(`#${cardId} .details-toggle`);
+      const isOpen = panel.classList.toggle('open');
+
+      if (panelId === 'prompt-details') {
+        button.textContent = isOpen ? 'Hide details, exercise & answer' : 'Show details, exercise & answer';
+      } else {
+        button.textContent = isOpen ? 'Hide details & tips' : 'Show details & tips';
+      }
+    }
+  </script>
+</body>
+</html>
