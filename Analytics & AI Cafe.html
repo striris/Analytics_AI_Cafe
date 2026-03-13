@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analytics & AI Cafe</title>
+  <style>
+    :root{
+      --brand:#40ae59;
+      --brand-deep:#2f8f47;
+      --bean:#5d4037;
+      --espresso:#3a2a24;
+      --cream:#fbf5ec;
+      --foam:#fffaf3;
+      --latte:#f2e6d7;
+      --card:#fffdf9cc;
+      --line:#d8c6b4;
+      --ink:#2c241f;
+      --muted:#6c625c;
+      --shadow:0 16px 40px rgba(58,42,36,.12);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(64,174,89,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,64,55,.10), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.2)),
+        linear-gradient(180deg, #fdf8f1 0%, #f7efe3 100%);
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        linear-gradient(rgba(93,64,55,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,64,55,.35) 1px, transparent 1px);
+      background-size:22px 22px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 88%);
+    }
+
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px}
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,250,243,.78)),
+        linear-gradient(180deg, rgba(64,174,89,.06), transparent);
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .hero:after{
+      content:"☕";
+      position:absolute;
+      right:22px;
+      top:14px;
+      font-size:64px;
+      opacity:.12;
+      transform:rotate(-8deg);
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      border:1px solid rgba(64,174,89,.20);
+      color:var(--brand-deep);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(34px, 5vw, 62px);
+      line-height:1.02;
+      letter-spacing:-1.6px;
+    }
+
+    .accent{color:var(--brand)}
+
+    .subtitle{
+      max-width:760px;
+      margin:0;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    @media (max-width: 900px){
+      .hero-grid{grid-template-columns:1fr}
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:24px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+    }
+
+    .panel h3{
+      margin:0 0 12px;
+      font-size:17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .bean{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--brand);
+      box-shadow:0 0 0 5px rgba(64,174,89,.12);
+      flex:0 0 auto;
+    }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:600px){
+      .info-grid{grid-template-columns:1fr}
+    }
+
+    .info{
+      border-radius:18px;
+      padding:14px;
+      border:1px dashed rgba(93,64,55,.22);
+      background:linear-gradient(180deg, rgba(255,255,255,.84), rgba(242,230,215,.38));
+    }
+
+    .info b{display:block; margin-bottom:2px}
+    .info span{color:var(--muted); font-size:14px}
+
+    .goal{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(64,174,89,.12), rgba(64,174,89,.06));
+      border:1px solid rgba(64,174,89,.18);
+      font-weight:700;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .chip{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(93,64,55,.14);
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .quote{
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(93,64,55,.07), rgba(255,255,255,.5));
+      border:1px solid rgba(93,64,55,.10);
+      color:var(--espresso);
+      font-weight:600;
+    }
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px 2px 14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.6px;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted)
+    }
+
+    .menu-note{
+      color:var(--muted);
+      font-size:14px;
+      background:rgba(255,255,255,.7);
+      border:1px solid rgba(93,64,55,.12);
+      padding:10px 12px;
+      border-radius:999px;
+    }
+
+    .menu-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    @media (max-width: 900px){
+      .menu-grid{grid-template-columns:1fr}
+    }
+
+    .menu-card{
+      position:relative;
+      overflow:hidden;
+      border-radius:26px;
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,250,243,.84));
+      border:1px solid rgba(93,64,55,.14);
+      box-shadow:var(--shadow);
+      padding:18px 18px 16px;
+    }
+
+    .menu-card:before{
+      content:"";
+      position:absolute;
+      inset:auto 0 0 0;
+      height:6px;
+      background:linear-gradient(90deg, var(--brand), #7fd38f 55%, #d6f3dc);
+    }
+
+    .menu-card.holiday:before{background:linear-gradient(90deg, #c9b7a5, #efe1d4)}
+    .menu-card.showcase:before{background:linear-gradient(90deg, #7e5a4d, #c7a793, #ead9c5)}
+
+    .week-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .week-number{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      color:var(--brand-deep);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .menu-card.holiday .week-number,
+    .menu-card.showcase .week-number{
+      background:rgba(93,64,55,.08);
+      color:var(--bean);
+    }
+
+    .date{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .title{
+      margin:0;
+      font-size:24px;
+      line-height:1.12;
+      letter-spacing:-.5px;
+    }
+
+    .desc{
+      margin:8px 0 0;
+      color:var(--muted);
+    }
+
+    .outcome{
+      margin:14px 0 12px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(64,174,89,.08);
+      border:1px solid rgba(64,174,89,.16);
+      font-size:14px;
+    }
+
+    .menu-card.holiday .outcome,
+    .menu-card.showcase .outcome{
+      background:rgba(93,64,55,.05);
+      border-color:rgba(93,64,55,.10);
+    }
+
+    .sections{
+      display:grid;
+      gap:10px;
+    }
+
+    .item{
+      padding:12px 12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.8);
+      border:1px dashed rgba(93,64,55,.18);
+    }
+
+    .item b{display:block; margin-bottom:4px}
+    .item span{color:var(--muted); font-size:14px}
+
+    .mini-list{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .mini-list div{
+      padding:10px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.75);
+      border:1px dashed rgba(93,64,55,.18);
+      color:var(--muted);
+    }
+
+    .footer-note{
+      margin-top:24px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Hi APAC Family</div>
+      <h1>Analytics <span class="accent">&amp; AI</span> Cafe</h1>
+      <p class="subtitle">
+        A beginner-friendly, hands-on learning series focused on building practical Analytics, Automation, and AI capability together.
+        Come to build, experiment, or simply listen and enjoy the cafe vibes while seeing what AI can do.
+      </p>
+
+      <div class="hero-grid">
+        <div class="panel">
+          <h3><span class="bean"></span> Your standing order</h3>
+          <div class="info-grid">
+            <div class="info">
+              <b>🕒 When</b>
+              <span>Every Friday · 3:00 to 4:00 PM</span>
+            </div>
+            <div class="info">
+              <b>📍 Where</b>
+              <span>Singapore Holstein · welcome to dial in online</span>
+            </div>
+          </div>
+          <div class="goal">
+            Walk out each week with something you can actually use in your work, and get inspired by different AI use cases.
+          </div>
+          <div class="chips">
+            <div class="chip">Short knowledge walkthrough</div>
+            <div class="chip">Live demo or build</div>
+            <div class="chip">Step-by-step follow along</div>
+            <div class="chip">Real work application</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="bean"></span> House blend</h3>
+          <div class="chips">
+            <div class="chip">AI Foundations</div>
+            <div class="chip">AI Assistants</div>
+            <div class="chip">AI Security</div>
+            <div class="chip">Excel &amp; Power Query</div>
+            <div class="chip">Tableau &amp; BI</div>
+            <div class="chip">Python &amp; VBA</div>
+            <div class="chip">Power Automate</div>
+            <div class="chip">Community Showcase</div>
+          </div>
+          <div class="quote">
+            AI is moving fast, but it is not something to fear. It is a tool to amplify how we think, create, and solve problems. Let’s embrace it and ride the wave together.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <div>
+        <h2>Cafe Menu</h2>
+        <p>Each week is served as a hands-on special.</p>
+      </div>
+    </div>
+
+    <section class="menu-grid">
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 0</div>
+          <div class="date">Mar 2 &amp; Mar 6</div>
+        </div>
+        <h3 class="title">AI Starter Badge Sprint</h3>
+        <p class="desc">A gentle onboarding session to get everyone started with approved AI tools.</p>
+        <div class="outcome"><b>Expected outcome:</b> 80% onboarded by end of week and 100% by end of Q1 2026. Participants understand how to access and use approved AI tools within company guidelines.</div>
+        <div class="sections">
+          <div class="item"><b>Section 1: Walk Through Key Concepts (15 min)</b><span>Walk through AI Starter material together and highlight concepts likely to appear in the assessment.</span></div>
+          <div class="item"><b>Section 2: Complete Assessment Live (15 min)</b><span>Participants complete the assessment with support, then submit the IT ticket together.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 1</div>
+          <div class="date">Mar 13</div>
+        </div>
+        <h3 class="title">Meet Your AI: ChatGPT, Copilot &amp; Claude</h3>
+        <p class="desc">A tasting platter of prompting, creativity, meeting support, and setup basics.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants can confidently configure AI tools, write structured prompts, and use AI for meetings, creativity, and daily productivity tasks.</div>
+        <div class="sections">
+          <div class="item"><b>Section 1: AI Settings &amp; Prompting Basics (15 min)</b><span>Walk through ChatGPT settings, memory, and custom instructions. Demonstrate live while participants follow and test.</span></div>
+          <div class="item"><b>Section 2: Creative AI Use Case (15 min)</b><span>Demonstrate image generation or style transformation. Participants try their own version and experiment.</span></div>
+          <div class="item"><b>Section 3: Copilot for Meetings (15 min)</b><span>Generate meeting notes and action items from a recording. Participants follow using a sample or real meeting.</span></div>
+          <div class="item"><b>Section 4: Prompt Like a Pro (15 min)</b><span>Practice rewriting weak prompts into strong ones and test results live.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 2</div>
+          <div class="date">Mar 20</div>
+        </div>
+        <h3 class="title">Create Your Personal AI Assistant</h3>
+        <p class="desc">Build your own company-knowledge assistant, then shape it for a real business use case.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants can build a functional chatbot connected to company knowledge and adapt it to a real business use case.</div>
+        <div class="sections">
+          <div class="item"><b>Section 1: Build a Bot that Connects to Company Knowledge (40 min)</b><span>Build a chatbot using ChatGPT Builder and Copilot Studio by uploading documents as a knowledge base. Participants follow step by step.</span></div>
+          <div class="item"><b>Section 2: Adapt to a Real Use Case (20 min)</b><span>Build a practical example such as Sales FAQ or onboarding assistant. Participants modify and test.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 3</div>
+          <div class="date">Mar 27</div>
+        </div>
+        <h3 class="title">AI Security &amp; Demystify Popular AI Tools</h3>
+        <p class="desc">Learn safe usage, account differences, and how to judge new tools with confidence.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants understand what data is safe to share, how to use work versus personal accounts responsibly, and how to evaluate new AI tools critically.</div>
+        <div class="sections">
+          <div class="item"><b>Section 1: What Is Safe to Share (15 min)</b><span>Walk through practical examples of safe and unsafe inputs. Participants review their own usage.</span></div>
+          <div class="item"><b>Section 2: Personal vs Work Accounts (15 min)</b><span>Demonstrate differences in settings and risks. Participants check their configurations.</span></div>
+          <div class="item"><b>Section 3: Other Popular AI Tools Overview (15 min)</b><span>NotebookLM, Gemini, and why caution is required.</span></div>
+          <div class="item"><b>Section 4: Open Security Q&amp;A (15 min)</b><span>Bring real scenarios and questions. Clarify guardrails and best practices.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card holiday">
+        <div class="week-row">
+          <div class="week-number">Week 4</div>
+          <div class="date">Apr 10</div>
+        </div>
+        <h3 class="title">Self-review Session</h3>
+        <p class="desc">A quiet cafe corner for practice, review, and trying things on your own.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants apply previous session learnings to their own work and strengthen practical confidence through independent practice.</div>
+        <div class="mini-list">
+          <div>Self Review &amp; Practice Week</div>
+        </div>
+      </article>
+
+      <article class="menu-card holiday">
+        <div class="week-row">
+          <div class="week-number">Week 5</div>
+          <div class="date">Apr 17</div>
+        </div>
+        <h3 class="title">Self-review Session</h3>
+        <p class="desc">Another practice week to revisit, refine, and experiment at your own pace.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants refine their implementations and identify areas where automation or AI can further improve their workflows.</div>
+        <div class="mini-list">
+          <div>Self Review &amp; Practice Week</div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 6</div>
+          <div class="date">Apr 24</div>
+        </div>
+        <h3 class="title">Excel &amp; Power Query Tricks</h3>
+        <p class="desc">A practical espresso shot for cleaning, shaping, and transforming messy data.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants can automate repetitive data cleanup and transformation tasks using Power Query instead of manual formulas or copy pasting.</div>
+        <div class="sections">
+          <div class="item"><b>Section 1: Power Query Basics (15 min)</b><span>Demonstrate cleaning a messy dataset. Participants follow along.</span></div>
+          <div class="item"><b>Section 2: Transformations That Save Time (15 min)</b><span>Show grouping, merging, and conditional columns. Participants replicate.</span></div>
+          <div class="item"><b>Section 3: Practical Business Example (15 min)</b><span>Apply Power Query to a real scenario. Participants follow.</span></div>
+          <div class="item"><b>Section 4: Apply to Their File (15 min)</b><span>Participants try their own spreadsheet. Troubleshooting and support provided.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 7</div>
+          <div class="date">May 1</div>
+        </div>
+        <h3 class="title">Tableau &amp; BI Storytelling</h3>
+        <p class="desc">Turn dashboards from informative to persuasive with clear visual storytelling.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants can improve dashboard clarity and storytelling using calculated fields and design enhancements.</div>
+        <div class="sections">
+          <div class="item"><b>Section 1: High Impact Dashboard Trick (20 min)</b><span>Demonstrate a calculated field or design improvement. Participants follow.</span></div>
+          <div class="item"><b>Section 2: Improve a Chart Together (20 min)</b><span>Enhance clarity and storytelling in a live example. Participants replicate changes.</span></div>
+          <div class="item"><b>Section 3: Apply to Their Report (20 min)</b><span>Participants improve one of their own dashboards. Live refinement and feedback.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 8</div>
+          <div class="date">May 8</div>
+        </div>
+        <h3 class="title">AI-Assisted Python Programming Level-up</h3>
+        <p class="desc">A stronger brew for participants ready to use AI to script and automate analytics work.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants can generate, modify, and troubleshoot Python scripts using AI assistance to automate analytics tasks.</div>
+        <div class="mini-list">
+          <div>Prerequisite required: complete the AI-Assisted Python Programming course before attending.</div>
+        </div>
+        <div class="sections" style="margin-top:10px">
+          <div class="item"><b>Section 1: Practical Automation Example (40 min)</b><span>Build a script that automates a repetitive task and performs analytics. Participants replicate and test.</span></div>
+          <div class="item"><b>Section 2: Apply to Your Own Task (20 min)</b><span>Participants come up with a problem related to their work. Live troubleshooting and support.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 9</div>
+          <div class="date">May 15</div>
+        </div>
+        <h3 class="title">AI-Assisted VBA Programming Level-up</h3>
+        <p class="desc">Use AI to help write macros and automate Excel workflows with more confidence.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants can use AI to write and refine VBA macros that automate Excel workflows.</div>
+        <div class="mini-list">
+          <div>Prerequisite required: complete the AI-Assisted VBA Programming course before attending.</div>
+        </div>
+        <div class="sections" style="margin-top:10px">
+          <div class="item"><b>Section 1: Practical Automation Example (40 min)</b><span>Build a macro that automates a repetitive task and performs analytics. Participants replicate and test.</span></div>
+          <div class="item"><b>Section 2: Apply to Your Own Task (20 min)</b><span>Participants come up with a problem related to their work. Live troubleshooting and support.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card">
+        <div class="week-row">
+          <div class="week-number">Week 10</div>
+          <div class="date">May 22</div>
+        </div>
+        <h3 class="title">Power Automate: Across Inbox, SharePoint and Teams</h3>
+        <p class="desc">Connect your Microsoft tools into one smooth workflow and cut manual handoffs.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants can build multi-step automated workflows that connect email, SharePoint, and Teams to reduce manual work.</div>
+        <div class="sections">
+          <div class="item"><b>Section 1: Build a Basic Flow (20 min)</b><span>Create a flow that saves attachments automatically or sends an email when a new file has been added to SharePoint.</span></div>
+          <div class="item"><b>Section 2: Add Conditions and Notifications (20 min)</b><span>Extend the flow with rules and Teams alerts. Participants replicate and test.</span></div>
+          <div class="item"><b>Section 3: Solve a Real Problem (20 min)</b><span>Build a real scenario from the room. Participants adapt their own workflow.</span></div>
+        </div>
+      </article>
+
+      <article class="menu-card showcase">
+        <div class="week-row">
+          <div class="week-number">Week 11</div>
+          <div class="date">May 29</div>
+        </div>
+        <h3 class="title">Community Showcase &amp; Season Wrap</h3>
+        <p class="desc">Close the season by sharing wins, seeing peer examples, and shaping what comes next.</p>
+        <div class="outcome"><b>Expected outcome:</b> Participants share real implementations, reinforce learning through peer examples, and identify next-level capability goals.</div>
+        <div class="mini-list">
+          <div>Invite 3 participants to demo something they built or learned during the series.</div>
+          <div>Reflect on wins and lessons learned.</div>
+          <div>Vote on topics for Season 2.</div>
+          <div>Celebrate progress and adoption.</div>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">Bring your curiosity and a cup of coffee ☕</p>
+  </div>
+</body>
+</html>
