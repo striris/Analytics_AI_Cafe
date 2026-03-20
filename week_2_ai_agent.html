@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 2 · Build Your AI Assistant</title>
+  <style>
+    :root{
+      --brand:#40ae59;
+      --brand-deep:#2f8f47;
+      --bean:#5d4037;
+      --espresso:#3a2a24;
+      --cream:#fbf5ec;
+      --foam:#fffaf3;
+      --latte:#f2e6d7;
+      --card:#fffdf9cc;
+      --line:#d8c6b4;
+      --ink:#2c241f;
+      --muted:#6c625c;
+      --shadow:0 16px 40px rgba(58,42,36,.12);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(64,174,89,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,64,55,.10), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.2)),
+        linear-gradient(180deg, #fdf8f1 0%, #f7efe3 100%);
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        linear-gradient(rgba(93,64,55,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,64,55,.35) 1px, transparent 1px);
+      background-size:22px 22px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 88%);
+    }
+
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px; position:relative; z-index:1}
+
+    .week-detail{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,250,243,.78)),
+        linear-gradient(180deg, rgba(64,174,89,.06), transparent);
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .week-detail:after{
+      content:"☕";
+      position:absolute;
+      right:22px;
+      top:14px;
+      font-size:64px;
+      opacity:.12;
+      transform:rotate(-8deg);
+    }
+
+    .week-pill,
+    .details-toggle,
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      border:1px solid rgba(64,174,89,.20);
+      color:var(--brand-deep);
+      font-weight:700;
+      letter-spacing:.2px;
+      text-decoration:none;
+    }
+
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(34px, 5vw, 62px);
+      line-height:1.02;
+      letter-spacing:-1.6px;
+    }
+
+    .subtitle{
+      max-width:760px;
+      margin:0;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    @media (max-width: 900px){
+      .detail-grid,
+      .agenda{grid-template-columns:1fr}
+    }
+
+    .outcome-card,
+    .card{
+      background:var(--card);
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:24px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+      box-shadow:var(--shadow);
+    }
+
+    .outcome-card h3{
+      margin:0 0 12px;
+      font-size:17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .bean{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--brand);
+      box-shadow:0 0 0 5px rgba(64,174,89,.12);
+      flex:0 0 auto;
+    }
+
+    .outcome-box{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(64,174,89,.12), rgba(64,174,89,.06));
+      border:1px solid rgba(64,174,89,.18);
+      font-weight:700;
+    }
+
+    .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+
+    .meta-chip,
+    .duration{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(93,64,55,.14);
+      color:var(--muted);
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .instructor{margin-top:14px; margin-bottom:12px; color:var(--brand-deep); font-size:15px; font-weight:600}
+    .week-header-actions{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px 2px 14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.6px;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted)
+    }
+
+    .agenda{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 34px rgba(58,42,36,.16);
+    }
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .number{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      color:var(--brand-deep);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+      min-width:42px;
+    }
+
+    .card h4{margin:0 0 10px; font-size:23px; line-height:1.2; letter-spacing:-.02em}
+    .card p{margin:0; color:var(--muted); line-height:1.7; font-size:16px}
+
+    .details-toggle{
+      margin-top:16px;
+      cursor:pointer;
+      font-size:13px;
+      transition:background .2s ease, transform .2s ease;
+    }
+
+    .details-toggle:hover,
+    .back-link:hover{background:rgba(64,174,89,.16); transform:translateY(-1px)}
+
+    .details-panel{
+      margin-top:16px;
+      padding:18px;
+      border-radius:18px;
+      background:#fffaf3;
+      border:1px solid rgba(93,64,55,.14);
+      display:none;
+    }
+
+    .details-panel.open{display:block}
+    .details-panel h5{margin:0 0 10px; font-size:16px; color:var(--ink)}
+    .details-panel p,
+    .details-panel li{color:var(--muted); line-height:1.7; font-size:15px}
+    .details-panel ul{margin:8px 0 14px 20px; padding:0}
+
+    .answer-box{
+      margin-top:10px;
+      padding:14px;
+      background:#ffffff;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:14px;
+      color:#355242;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="week-detail" id="week2-detail">
+      <div class="week-header-actions">
+        <div class="week-pill">☕ Analytics &amp; AI Cafe</div>
+        <a class="back-link" href="index.html">← Back to Cafe Menu</a>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <h1>Week 2 · Build Your AI Assistant</h1>
+          <p class="subtitle">A practical follow-along session where you build a chatbot connected to company knowledge, then adapt it into a useful business assistant for a real team scenario.</p>
+          <div class="meta">
+            <div class="meta-chip">📅 Date: Mar 20</div>
+            <div class="meta-chip">🧭 Format: 3 guided builds</div>
+            <div class="meta-chip">⏱️ Total Time: 60 min</div>
+          </div>
+          <div class="instructor">Instructor: Xinran Liu</div>
+        </div>
+
+        <aside class="outcome-card">
+          <h3><span class="bean"></span> Expected outcome</h3>
+          <div class="outcome-box">Participants can build a functional chatbot connected to company knowledge and adapt it to a real business use case.</div>
+        </aside>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Menu</h2>
+          <p>Follow along, click to expand, and build as you go.</p>
+        </div>
+      </div>
+
+      <section class="agenda">
+        <article class="card" id="copilot-finance-agent">
+          <div class="card-top">
+            <div class="number">1</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>Build a Copilot Agent Connected to Company Knowledge</h4>
+          <p>Watch a live demo of building a Copilot agent that answers questions using information from a finance folder in SharePoint.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('copilot-finance-details', 'copilot-finance-agent')">Show details &amp; tips</button>
+          <div class="details-panel" id="copilot-finance-details">
+            <h5>What you will see</h5>
+            <ul>
+              <li>How to connect Copilot to a specific SharePoint site or folder containing finance documents.</li>
+              <li>How the agent searches those files and answers questions based on the available content.</li>
+              <li>How to test the agent with realistic finance-related questions.</li>
+            </ul>
+
+            <h5>Copilot vs ChatGPT</h5>
+            <ul>
+              <li>Copilot can connect directly to SharePoint and use live company data.</li>
+              <li>ChatGPT currently cannot connect to SharePoint live and relies on uploaded files.</li>
+              <li>Live connection for ChatGPT is expected to be enabled in the next few weeks.</li>
+            </ul>
+
+            <h5>Why connect to a specific SharePoint site</h5>
+            <p>Connecting Copilot to a specific SharePoint site or folder improves accuracy. It narrows the search space so the agent focuses only on the most relevant documents instead of searching too broadly.</p>
+
+            <h5>Practice questions</h5>
+            <div class="answer-box">What does the finance policy say about expense approval limits?</div>
+            <div class="answer-box">Summarize the travel reimbursement process in 3 bullet points.</div>
+            <div class="answer-box">Which finance documents mention approval before payment submission?</div>
+          </div>
+        </article>
+
+        <article class="card" id="chatgpt-document-agent">
+          <div class="card-top">
+            <div class="number">2</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>Build a ChatGPT Agent for Document Generation</h4>
+          <p>Watch a live demo of building a ChatGPT agent that generates a document in a specific format based on an uploaded file.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('chatgpt-doc-details', 'chatgpt-document-agent')">Show details &amp; tips</button>
+          <div class="details-panel" id="chatgpt-doc-details">
+            <h5>What you will see</h5>
+            <ul>
+              <li>How to upload a file and use it as source material for an agent.</li>
+              <li>How to instruct the agent to produce output in a required format, such as a summary, memo, report, or FAQ.</li>
+              <li>How small changes to instructions improve consistency and formatting.</li>
+            </ul>
+
+            <h5>Sample instruction</h5>
+            <div class="answer-box">Based on the uploaded file, generate a one-page summary in this format: background, key points, recommended actions, and next steps. Keep the tone professional and concise.</div>
+
+            <h5>Tips</h5>
+            <ul>
+              <li>Be specific about the exact structure you want.</li>
+              <li>State what the agent should include and what it should avoid.</li>
+              <li>Test with different file types and compare the outputs.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card" id="build-your-own-agent">
+          <div class="card-top">
+            <div class="number">3</div>
+            <div class="duration">30 min</div>
+          </div>
+          <h4>Build Your Own Agent</h4>
+          <p>Use the second half of the session to build something yourself on the spot, test it, and ask questions as you go.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('build-your-own-details', 'build-your-own-agent')">Show details &amp; ideas</button>
+          <div class="details-panel" id="build-your-own-details">
+            <h5>What to build</h5>
+            <p>Choose a simple use case that is relevant to your team and try building it during the session.</p>
+
+            <h5>Ideas by department</h5>
+            <ul>
+              <li><strong>HR:</strong> onboarding assistant, policy Q&amp;A bot, training recommender</li>
+              <li><strong>Sales:</strong> sales FAQ bot, proposal drafting assistant, customer meeting prep</li>
+              <li><strong>Finance:</strong> expense policy assistant, invoice or PO query bot, budget explainer</li>
+              <li><strong>IT:</strong> helpdesk assistant, troubleshooting guide, system access helper</li>
+              <li><strong>Analytics:</strong> dashboard explainer, SQL helper, data dictionary bot</li>
+            </ul>
+
+            <h5>Good starting point</h5>
+            <div class="answer-box">Pick one repeated question your team gets often, gather the documents that answer it, and build a simple agent around that use case.</div>
+
+            <h5>Tips</h5>
+            <ul>
+              <li>Start narrow so your agent feels focused and useful.</li>
+              <li>Bring one or two good documents instead of too many files.</li>
+              <li>Test with realistic questions and refine the instructions based on the answers.</li>
+              <li>Use the live Q&amp;A time to troubleshoot and improve your build.</li>
+            </ul>
+          </div>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    function toggleDetails(panelId, cardId) {
+      const panel = document.getElementById(panelId);
+      const button = document.querySelector(`#${cardId} .details-toggle`);
+      const isOpen = panel.classList.toggle('open');
+      button.textContent = isOpen ? 'Hide details & tips' : 'Show details & tips';
+    }
+  </script>
+</body>
+</html>
