@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 3 · AI Security & Popular Tools Demisified</title>
+  <style>
+    :root{
+      --brand:#40ae59;
+      --brand-deep:#2f8f47;
+      --bean:#5d4037;
+      --espresso:#3a2a24;
+      --cream:#fbf5ec;
+      --foam:#fffaf3;
+      --latte:#f2e6d7;
+      --card:#fffdf9cc;
+      --line:#d8c6b4;
+      --ink:#2c241f;
+      --muted:#6c625c;
+      --shadow:0 16px 40px rgba(58,42,36,.12);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(64,174,89,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,64,55,.10), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.2)),
+        linear-gradient(180deg, #fdf8f1 0%, #f7efe3 100%);
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        linear-gradient(rgba(93,64,55,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,64,55,.35) 1px, transparent 1px);
+      background-size:22px 22px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 88%);
+    }
+
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px; position:relative; z-index:1}
+
+    .week-detail{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,250,243,.78)),
+        linear-gradient(180deg, rgba(64,174,89,.06), transparent);
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .week-detail:after{
+      content:"☕";
+      position:absolute;
+      right:22px;
+      top:14px;
+      font-size:64px;
+      opacity:.12;
+      transform:rotate(-8deg);
+    }
+
+    .week-pill,
+    .details-toggle,
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      border:1px solid rgba(64,174,89,.20);
+      color:var(--brand-deep);
+      font-weight:700;
+      letter-spacing:.2px;
+      text-decoration:none;
+    }
+
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(34px, 5vw, 62px);
+      line-height:1.02;
+      letter-spacing:-1.6px;
+    }
+
+    .subtitle{
+      max-width:760px;
+      margin:0;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    @media (max-width: 900px){
+      .detail-grid,
+      .agenda{grid-template-columns:1fr}
+    }
+
+    .outcome-card,
+    .card{
+      background:var(--card);
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:24px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+      box-shadow:var(--shadow);
+    }
+
+    .outcome-card h3{
+      margin:0 0 12px;
+      font-size:17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .bean{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--brand);
+      box-shadow:0 0 0 5px rgba(64,174,89,.12);
+      flex:0 0 auto;
+    }
+
+    .outcome-box{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(64,174,89,.12), rgba(64,174,89,.06));
+      border:1px solid rgba(64,174,89,.18);
+      font-weight:700;
+    }
+
+    .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+
+    .meta-chip,
+    .duration{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(93,64,55,.14);
+      color:var(--muted);
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .instructor{margin-top:14px; margin-bottom:12px; color:var(--brand-deep); font-size:15px; font-weight:600}
+    .week-header-actions{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px 2px 14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.6px;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted)
+    }
+
+    .agenda{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 34px rgba(58,42,36,.16);
+    }
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .number{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      color:var(--brand-deep);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+      min-width:42px;
+    }
+
+    .card h4{margin:0 0 10px; font-size:23px; line-height:1.2; letter-spacing:-.02em}
+    .card p{margin:0; color:var(--muted); line-height:1.7; font-size:16px}
+
+    .details-toggle{
+      margin-top:16px;
+      cursor:pointer;
+      font-size:13px;
+      transition:background .2s ease, transform .2s ease;
+    }
+
+    .details-toggle:hover,
+    .back-link:hover{background:rgba(64,174,89,.16); transform:translateY(-1px)}
+
+    .details-panel{
+      margin-top:16px;
+      padding:18px;
+      border-radius:18px;
+      background:#fffaf3;
+      border:1px solid rgba(93,64,55,.14);
+      display:none;
+    }
+
+    .details-panel.open{display:block}
+    .details-panel h5{margin:0 0 10px; font-size:16px; color:var(--ink)}
+    .details-panel p,
+    .details-panel li{color:var(--muted); line-height:1.7; font-size:15px}
+    .details-panel ul{margin:8px 0 14px 20px; padding:0}
+
+    .answer-box{
+      margin-top:10px;
+      padding:14px;
+      background:#ffffff;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:14px;
+      color:#355242;
+    }
+
+    .callout{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(64,174,89,.10), rgba(64,174,89,.05));
+      border:1px solid rgba(64,174,89,.16);
+      color:var(--espresso);
+      font-size:14px;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="week-detail" id="week3-detail">
+      <div class="week-header-actions">
+        <div class="week-pill">☕ Analytics &amp; AI Cafe</div>
+        <a class="back-link" href="index.html">← Back to Cafe Menu</a>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <h1>Week 3 · AI Security &amp; Popular Tools</h1>
+          <p class="subtitle">A practical session on safe AI usage, account differences, and how to explore popular tools with better judgment and confidence.</p>
+          <div class="meta">
+            <div class="meta-chip">📅 Date: Mar 27</div>
+            <div class="meta-chip">🧭 Format: 3 guided demos</div>
+            <div class="meta-chip">⏱️ Total Time: 60 min</div>
+          </div>
+          <div class="instructor">Instructor: Xinran Liu</div>
+        </div>
+
+        <aside class="outcome-card">
+          <h3><span class="bean"></span> Expected outcome</h3>
+          <div class="outcome-box">Participants understand what data is safe to share, how to use work versus personal accounts responsibly, and how to evaluate popular AI tools more critically.</div>
+        </aside>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Menu</h2>
+          <p>Follow along, click to expand, and learn the guardrails as you go.</p>
+        </div>
+      </div>
+
+      <section class="agenda">
+        <article class="card" id="safe-to-share">
+          <div class="card-top">
+            <div class="number">1</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>What Is Safe to Share</h4>
+          <p>Learn how to judge whether a prompt, file, or pasted content is safe to use in AI tools through practical examples of safe and unsafe inputs.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('safe-share-details', 'safe-to-share')">Show details &amp; tips</button>
+          <div class="details-panel" id="safe-share-details">
+            <h5>How AI tools generally handle your data</h5>
+            <ul>
+              <li>Most tools use your input within the session to generate responses.</li>
+              <li>Data handling differs by tool, account type, and settings (personal vs enterprise).</li>
+              <li>Some tools may store or use data for service improvement unless disabled or governed by enterprise policies.</li>
+            </ul>
+
+            <h5>What this means for you</h5>
+            <ul>
+              <li>Treat public tools/personal accounts as external by default.</li>
+              <li>Always use company-approved or enterprise versions for work data.</li>
+              <li>Always assume sensitive data requires stricter controls.</li>
+            </ul>
+            <h5>What to look for</h5>
+            <ul>
+              <li>Safe examples: public information, generic templates, already-approved training content, or non-sensitive examples.</li>
+              <li>Use caution with internal documents, process details, business plans, financial figures, customer information, and meeting notes.</li>
+              <li>Do not paste personal data, confidential company information, customer data, or anything you would not want shared externally.</li>
+            </ul>
+
+            <h5>Simple rule of thumb</h5>
+            <div class="answer-box">If you would not feel comfortable emailing it outside the company, do not paste it into an unapproved AI tool.</div>
+
+            <h5>Examples to review</h5>
+            <div class="answer-box">Safe: “Draft a friendly reminder email for a meeting tomorrow at 3 PM.”</div>
+            <div class="answer-box">Unsafe: “Summarize this confidential customer complaint and include names, order details, and internal notes.”</div>
+            <div class="answer-box">Borderline: “Rewrite this internal process note.” Only do this in approved tools and only when the content is allowed.</div>
+
+            <div class="callout">The goal is not to avoid AI. The goal is to use AI without exposing information that should stay protected.</div>
+          </div>
+        </article>
+
+        <article class="card" id="personal-vs-work">
+          <div class="card-top">
+            <div class="number">2</div>
+            <div class="duration">15 min</div>
+          </div>
+          <h4>Personal vs Work Accounts</h4>
+          <p>Understand the difference between personal and work AI accounts, and why account type matters for privacy, governance, and responsible use.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('account-details', 'personal-vs-work')">Show details &amp; tips</button>
+          <div class="details-panel" id="account-details">
+            <h5>Why this matters</h5>
+            <ul>
+              <li>Work accounts are usually managed with company controls, access policies, and approved data settings.</li>
+              <li>Personal accounts are not governed by the company and may not meet internal security expectations.</li>
+              <li>Even if a personal account feels convenient, it may create unnecessary risk when used for company work. Data from personal accounts may be stored or shared in ways that do not align with company policies.</li>
+            </ul>
+
+            <h5>What to check</h5>
+            <ul>
+              <li>Which account are you logged into right now?</li>
+              <li>Are you using a company-approved version of the tool?</li>
+              <li>Do you understand whether your inputs are stored, shared, or used beyond your immediate session?</li>
+            </ul>
+
+            <h5>Good practice</h5>
+            <div class="answer-box">Use work-approved AI tools for work content. Keep personal accounts for personal experimentation with non-sensitive content only.</div>
+          </div>
+        </article>
+
+        <article class="card" id="notebooklm">
+          <div class="card-top">
+            <div class="number">3A</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>NotebookLM: Explain a Concept with AI</h4>
+          <p>Generate a video-style explanation of a concept such as cash against documents, then try creating your own.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('notebooklm-details', 'notebooklm')">Show details & tips</button>
+          <div class="details-panel" id="notebooklm-details">
+            <ul>
+              <li>Upload a safe document, material or directly search on internet within the platform.</li>
+              <li>Create a video or audio-style explanation with tailored instructions.</li>
+              <li>Generate a summary in ChatGPT/Copilot before you upload to NotebookLM for more customized results.</li>
+              <li>Try your own topic of interest.</li>
+            </ul>
+            <div class="callout">Only upload non-sensitive content. Treat this like sharing externally.</div>
+          </div>
+        </article>
+
+        <article class="card" id="databricks-genie">
+          <div class="card-top">
+            <div class="number">3B</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>Databricks Genie: Ask Data Questions</h4>
+          <p>Ask business questions in natural language and explore data insights.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('genie-details', 'databricks-genie')">Show details &amp; tips</button>
+          <div class="details-panel" id="genie-details">
+            <h5>How it works</h5>
+            <ul>
+              <li>Genie understands your question in natural language.</li>
+              <li>It translates your question into a data query (such as SQL).</li>
+              <li>It retrieves results from company data and presents them as tables or summaries.</li>
+            </ul>
+
+            <h5>Try these questions</h5>
+            <ul>
+              <li>What are some most recent trades in APAC?</li>
+              <li>What is our position in butter?</li>
+            </ul>
+
+            <h5>Key idea</h5>
+            <div class="answer-box">Genie does not generate answers from general knowledge. It pulls real answers directly from your company’s data.</div>
+
+            <h5>What to keep in mind</h5>
+            <ul>
+              <li>This is a governed environment with controlled data access.</li>
+              <li>You still need business judgment to interpret results.</li>
+              <li>Always sanity check outputs before using them.</li>
+            </ul>
+
+            <div class="callout">Genie reduces effort to get data, but you are still responsible for interpreting it correctly.</div>
+          </div>
+        </article>
+
+        <article class="card" id="claude">
+          <div class="card-top">
+            <div class="number">3C</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>Claude: Create Artifacts</h4>
+          <p>Explore Claude interface, review artifacts, and create one together.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('claude-details', 'claude')">Show details & tips</button>
+          <div class="details-panel" id="claude-details">
+            <ul>
+              <li>Review example artifacts.</li>
+              <li>Create a simple artifact together.</li>
+              <li>Experiment with structured outputs.</li>
+            </ul>
+
+            <div class="callout">You can now apply Claude as well. It is pay as you go, so start with the Haiku model first as it is free or lower cost.</div>
+          </div>
+        </article>
+
+        <article class="card" id="chatgpt-excel">
+          <div class="card-top">
+            <div class="number">3D</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>ChatGPT in Excel: Boost Productivity</h4>
+          <p>Try AI-powered features inside Excel for formulas, summaries, and cleanup tasks.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('excel-details', 'chatgpt-excel')">Show details & tips</button>
+          <div class="details-panel" id="excel-details">
+            <ul>
+              <li>Generate formulas from plain language.</li>
+              <li>Clean or rewrite messy text.</li>
+              <li>Summarize or categorize data.</li>
+            </ul>
+            <div class="callout">Be mindful of what data is inside your spreadsheet before using AI.</div>
+          </div>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    function toggleDetails(panelId, cardId) {
+      const panel = document.getElementById(panelId);
+      const button = document.querySelector(`#${cardId} .details-toggle`);
+      const isOpen = panel.classList.toggle('open');
+      button.textContent = isOpen ? 'Hide details & tips' : 'Show details & tips';
+    }
+  </script>
+</body>
+</html>
