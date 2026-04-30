@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 7 · Excel & Power Query Tricks</title>
+  <style>
+    :root{
+      --brand:#40ae59;
+      --brand-deep:#2f8f47;
+      --bean:#5d4037;
+      --espresso:#3a2a24;
+      --cream:#fbf5ec;
+      --foam:#fffaf3;
+      --latte:#f2e6d7;
+      --card:#fffdf9cc;
+      --line:#d8c6b4;
+      --ink:#2c241f;
+      --muted:#6c625c;
+      --shadow:0 16px 40px rgba(58,42,36,.12);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(64,174,89,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,64,55,.10), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.2)),
+        linear-gradient(180deg, #fdf8f1 0%, #f7efe3 100%);
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        linear-gradient(rgba(93,64,55,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,64,55,.35) 1px, transparent 1px);
+      background-size:22px 22px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 88%);
+    }
+
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px; position:relative; z-index:1}
+
+    .week-detail{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,250,243,.78)),
+        linear-gradient(180deg, rgba(64,174,89,.06), transparent);
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .week-detail:after{
+      content:"☕";
+      position:absolute;
+      right:22px;
+      top:14px;
+      font-size:64px;
+      opacity:.12;
+      transform:rotate(-8deg);
+    }
+
+    .week-pill,
+    .details-toggle,
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      border:1px solid rgba(64,174,89,.20);
+      color:var(--brand-deep);
+      font-weight:700;
+      letter-spacing:.2px;
+      text-decoration:none;
+    }
+
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(34px, 5vw, 62px);
+      line-height:1.02;
+      letter-spacing:-1.6px;
+    }
+
+    .subtitle{
+      max-width:760px;
+      margin:0;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    @media (max-width: 900px){
+      .detail-grid,
+      .agenda{grid-template-columns:1fr}
+    }
+
+    .outcome-card,
+    .card{
+      background:var(--card);
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:24px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+      box-shadow:var(--shadow);
+    }
+
+    .outcome-card h3{
+      margin:0 0 12px;
+      font-size:17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .bean{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--brand);
+      box-shadow:0 0 0 5px rgba(64,174,89,.12);
+      flex:0 0 auto;
+    }
+
+    .outcome-box{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(64,174,89,.12), rgba(64,174,89,.06));
+      border:1px solid rgba(64,174,89,.18);
+      font-weight:700;
+    }
+
+    .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+
+    .meta-chip,
+    .duration{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(93,64,55,.14);
+      color:var(--muted);
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .instructor{margin-top:14px; margin-bottom:12px; color:var(--brand-deep); font-size:15px; font-weight:600}
+    .week-header-actions{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px 2px 14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.6px;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted)
+    }
+
+    .agenda{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 34px rgba(58,42,36,.16);
+    }
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .number{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      color:var(--brand-deep);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+      min-width:42px;
+    }
+
+    .card h4{margin:0 0 10px; font-size:23px; line-height:1.2; letter-spacing:-.02em}
+    .card p{margin:0; color:var(--muted); line-height:1.7; font-size:16px}
+
+    .details-toggle{
+      margin-top:16px;
+      cursor:pointer;
+      font-size:13px;
+      transition:background .2s ease, transform .2s ease;
+    }
+
+    .details-toggle:hover,
+    .back-link:hover{background:rgba(64,174,89,.16); transform:translateY(-1px)}
+
+    .details-panel{
+      margin-top:16px;
+      padding:18px;
+      border-radius:18px;
+      background:#fffaf3;
+      border:1px solid rgba(93,64,55,.14);
+      display:none;
+    }
+
+    .details-panel.open{display:block}
+    .details-panel h5{margin:0 0 10px; font-size:16px; color:var(--ink)}
+    .details-panel p,
+    .details-panel li{color:var(--muted); line-height:1.7; font-size:15px}
+    .details-panel ul{margin:8px 0 14px 20px; padding:0}
+
+    .answer-box{
+      margin-top:10px;
+      padding:14px;
+      background:#ffffff;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:14px;
+      color:#355242;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size:14px;
+      white-space:pre-wrap;
+    }
+
+    .callout{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(64,174,89,.10), rgba(64,174,89,.05));
+      border:1px solid rgba(64,174,89,.16);
+      color:var(--espresso);
+      font-size:14px;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="week-detail" id="week7-detail">
+      <div class="week-header-actions">
+        <div class="week-pill">☕ Analytics &amp; AI Cafe</div>
+        <a class="back-link" href="index.html">← Back to Cafe Menu</a>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <h1>Week 7 · Excel &amp; Power Query Tricks</h1>
+          <p class="subtitle">A hands-on session where participants solve the same Excel automation tasks using two approaches: Power Query and AI-assisted VBA.</p>
+          <div class="meta">
+            <div class="meta-chip">📅 Date: 30th Apr 2026</div>
+            <div class="meta-chip">🧭 Format: 3 hands-on tasks</div>
+            <div class="meta-chip">⏱️ Total Time: 60 min</div>
+          </div>
+          <div class="instructor">Instructor: Xinran Liu</div>
+        </div>
+
+        <aside class="outcome-card">
+          <h3><span class="bean"></span> Expected outcome</h3>
+          <div class="outcome-box">Participants can import, clean, append, and calculate data using both Power Query and AI-assisted VBA, then choose the right approach for repeatable Excel work.</div>
+        </aside>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Menu</h2>
+          <p>Follow along, compare Power Query with AI-assisted VBA, and practice using sample files.</p>
+        </div>
+      </div>
+
+      <section class="agenda">
+        <article class="card" id="practice-files">
+          <div class="card-top">
+            <div class="number">0</div>
+            <div class="duration">Setup</div>
+          </div>
+          <h4>Practice Files</h4>
+          <p>Use a small folder of sample Excel/CSV files so everyone can practice importing, cleaning, appending, and calculating fields.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('practice-files-details', 'practice-files')">Show file design</button>
+          <div class="details-panel" id="practice-files-details">
+            <h5>Folder structure</h5>
+            <div class="answer-box">Week7_Practice_Files/
+├─ 01_Messy_Trades.csv
+├─ 02_New_Trades_To_Append.csv
+├─ 03_Product_Mapping.csv
+└─ Week7_Workbook.xlsx</div>
+
+            <h5>01_Messy_Trades.csv</h5>
+            <p>This file should include messy trade data for cleaning. Include columns like:</p>
+            <ul>
+              <li><strong>Trade ID</strong></li>
+              <li><strong>Trade Date</strong> with mixed date formats</li>
+              <li><strong>Product Code</strong> such as APAC-BUTTER-2026-001</li>
+              <li><strong>Counterparty</strong> with extra spaces or inconsistent casing</li>
+              <li><strong>Quantity</strong> stored as text</li>
+              <li><strong>Price</strong> stored as text or with currency symbols</li>
+            </ul>
+
+            <h5>02_New_Trades_To_Append.csv</h5>
+            <p>This file should use the same final structure as the cleaned data and contain a few new rows to append into the current workbook.</p>
+
+            <h5>03_Product_Mapping.csv</h5>
+            <p>This optional file can map product codes to product groups, such as Butter, Cheese, Milk Powder, or Cocoa.</p>
+
+            <div class="callout">Keep the files small. The goal is to learn the workflow, not to process a huge dataset.</div>
+          </div>
+        </article>
+
+        <article class="card" id="task-clean-data">
+          <div class="card-top">
+            <div class="number">1</div>
+            <div class="duration">20 min</div>
+          </div>
+          <h4>Import &amp; Clean Data</h4>
+          <p>Import messy trade data, change data types, clean text fields, and split a product code into useful columns.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('clean-data-details', 'task-clean-data')">Show steps</button>
+          <div class="details-panel" id="clean-data-details">
+            <h5>Power Query approach</h5>
+            <ul>
+              <li>Go to <strong>Data &gt; Get Data &gt; From Text/CSV</strong> and select <strong>01_Messy_Trades.csv</strong>.</li>
+              <li>Open the file in Power Query.</li>
+              <li>Trim and clean text columns such as Counterparty.</li>
+              <li>Change Trade Date to Date, Quantity to Number, and Price to Decimal Number.</li>
+              <li>Split Product Code by delimiter <strong>-</strong> into Region, Product, Year, and Sequence.</li>
+              <li>Rename columns clearly and load the result into Excel.</li>
+            </ul>
+
+            <h5>AI-assisted VBA approach</h5>
+            <p>Ask AI to create a macro that imports the CSV, cleans fields, changes data types, and splits Product Code.</p>
+            <div class="answer-box">Create an Excel VBA macro that imports a CSV file selected by the user. The macro should place the data into a sheet called Cleaned_Trades, trim spaces in text fields, convert Trade Date to date, convert Quantity and Price to numbers, and split Product Code by hyphen into Region, Product, Year, and Sequence columns. Add comments to explain each step.</div>
+
+            <h5>Compare</h5>
+            <ul>
+              <li>Power Query is easier to audit through Applied Steps.</li>
+              <li>VBA can be useful when you want buttons, automation, or custom workbook behavior.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card" id="task-append-file">
+          <div class="card-top">
+            <div class="number">2</div>
+            <div class="duration">20 min</div>
+          </div>
+          <h4>Append One File to Current Excel</h4>
+          <p>Import one new trade file from a folder and append it to the current cleaned Excel table.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('append-file-details', 'task-append-file')">Show steps</button>
+          <div class="details-panel" id="append-file-details">
+            <h5>Power Query approach</h5>
+            <ul>
+              <li>Load the current cleaned table into Power Query.</li>
+              <li>Import <strong>02_New_Trades_To_Append.csv</strong>.</li>
+              <li>Apply the same cleaning steps and column names.</li>
+              <li>Use <strong>Append Queries</strong> to combine the existing table and new file.</li>
+              <li>Load the appended result back into Excel.</li>
+            </ul>
+
+            <h5>AI-assisted VBA approach</h5>
+            <p>Ask AI to create a macro that lets the user select one file and append its rows to the existing table.</p>
+            <div class="answer-box">Create an Excel VBA macro that asks the user to select a CSV file. Append the rows from that CSV file to the bottom of the table named Trades_Table in the current workbook. Match columns by header name where possible. Do not duplicate the header row. After appending, format the table and show a message with the number of rows added.</div>
+
+            <h5>Compare</h5>
+            <ul>
+              <li>Power Query is better when the same file structure will be refreshed regularly.</li>
+              <li>VBA is useful when users need a simple button to append one file on demand.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card" id="task-calculated-field">
+          <div class="card-top">
+            <div class="number">3</div>
+            <div class="duration">20 min</div>
+          </div>
+          <h4>Create a Calculated Field</h4>
+          <p>Add a calculated field such as Trade Value, Margin, or Risk Flag using both Power Query and AI-assisted VBA.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('calculated-field-details', 'task-calculated-field')">Show steps</button>
+          <div class="details-panel" id="calculated-field-details">
+            <h5>Power Query approach</h5>
+            <ul>
+              <li>Open the cleaned or appended table in Power Query.</li>
+              <li>Choose <strong>Add Column &gt; Custom Column</strong>.</li>
+              <li>Create <strong>Trade Value</strong> using Quantity × Price.</li>
+              <li>Optional: create a Risk Flag if Trade Value is above a threshold.</li>
+              <li>Load the final table back into Excel.</li>
+            </ul>
+            <div class="answer-box">Trade Value = [Quantity] * [Price]
+Risk Flag = if [Trade Value] &gt; 100000 then "Review" else "OK"</div>
+
+            <h5>AI-assisted VBA approach</h5>
+            <p>Ask AI to create a macro that inserts formulas or calculates values directly in the Excel table.</p>
+            <div class="answer-box">Create an Excel VBA macro that adds two new columns to the table named Trades_Table. The first column should be Trade Value calculated as Quantity multiplied by Price. The second column should be Risk Flag. If Trade Value is greater than 100000, return Review; otherwise return OK. Format Trade Value as currency and autofit the columns.</div>
+
+            <h5>Compare</h5>
+            <ul>
+              <li>Power Query keeps the calculation inside the transformation workflow.</li>
+              <li>VBA can add formulas, formatting, and user-facing automation in the workbook.</li>
+            </ul>
+          </div>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    function toggleDetails(panelId, cardId) {
+      const panel = document.getElementById(panelId);
+      const button = document.querySelector(`#${cardId} .details-toggle`);
+      const isOpen = panel.classList.toggle('open');
+      button.textContent = isOpen ? 'Hide details & tips' : 'Show details & tips';
+    }
+  </script>
+</body>
+</html>

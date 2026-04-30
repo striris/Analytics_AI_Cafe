@@ -1,0 +1,5 @@
+﻿Trade ID,Trade Date,Product Code,Counterparty,Quantity,Price,Trader,Notes
+T-1011,2026-03-11,APAC-BUTTER-2026-011,Harbour Foods Pte Ltd,900,4.35,Lily,new APAC butter order
+T-1012,2026-03-12,EMEA-CHEESE-2026-012,Lakeside Dairy BV,750,3.90,Maya,append test
+T-1013,2026-03-13,APAC-MILKPOWDER-2026-013,Pacific Ingredients,1800,2.25,Leo,append test
+T-1014,2026-03-14,AMER-COCOA-2026-014,Cocoa Bridge LLC,500,5.95,Lily,append test

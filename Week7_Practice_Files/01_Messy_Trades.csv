@@ -1,0 +1,11 @@
+﻿Trade ID,Trade Date,Product Code,Counterparty,Quantity,Price,Trader,Notes
+ T-1001 ,2026-03-01,APAC-BUTTER-2026-001,  Sunrise Foods Pte Ltd ,"1,200",$4.25, Lily ,urgent shipment
+T-1002,03/02/2026,EMEA-CHEESE-2026-002,alpine dairy GmbH,850,3.80,Maya, confirm docs 
+T-1003,2-Mar-26,APAC-MILKPOWDER-2026-003,  BLUE HARBOUR TRADING,"2,500",$2.15,Leo,missing PO
+ T-1004,2026/03/04,AMER-COCOA-2026-004,North Star Foods,"1,000",5.60, Lily,
+T-1005 ,05-03-2026,APAC-BUTTER-2026-005,green valley ltd , 700 ,$4.40,Maya ,price revised
+T-1006,March 6 2026,EMEA-MILKPOWDER-2026-006,  Euro Dairy Partners,"1,450",2.30,Leo,
+T-1007,2026.03.07,APAC-CHEESE-2026-007,Lotus Trading Co,920,$3.95,Lily,check credit limit
+ T-1008 ,8/3/2026,AMER-BUTTER-2026-008,  Golden Farm Inc ,"1,100",4.10,Maya,
+T-1009,2026-03-09,APAC-COCOA-2026-009,Merlion Commodities,600,$5.75,Leo,contract pending
+T-1010,10-Mar-26,EMEA-BUTTER-2026-010,  Nordic Foods AS,"1,300",4.05,Lily,
