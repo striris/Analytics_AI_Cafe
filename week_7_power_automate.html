@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 8 · Power Automate</title>
+  <style>
+    :root{
+      --brand:#40ae59;
+      --brand-deep:#2f8f47;
+      --bean:#5d4037;
+      --espresso:#3a2a24;
+      --cream:#fbf5ec;
+      --foam:#fffaf3;
+      --latte:#f2e6d7;
+      --card:#fffdf9cc;
+      --line:#d8c6b4;
+      --ink:#2c241f;
+      --muted:#6c625c;
+      --shadow:0 16px 40px rgba(58,42,36,.12);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(64,174,89,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,64,55,.10), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.2)),
+        linear-gradient(180deg, #fdf8f1 0%, #f7efe3 100%);
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        linear-gradient(rgba(93,64,55,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,64,55,.35) 1px, transparent 1px);
+      background-size:22px 22px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 88%);
+    }
+
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px; position:relative; z-index:1}
+
+    .week-detail{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,250,243,.78)),
+        linear-gradient(180deg, rgba(64,174,89,.06), transparent);
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .week-detail:after{
+      content:"☕";
+      position:absolute;
+      right:22px;
+      top:14px;
+      font-size:64px;
+      opacity:.12;
+      transform:rotate(-8deg);
+    }
+
+    .week-pill,
+    .details-toggle,
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      border:1px solid rgba(64,174,89,.20);
+      color:var(--brand-deep);
+      font-weight:700;
+      letter-spacing:.2px;
+      text-decoration:none;
+    }
+
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(34px, 5vw, 62px);
+      line-height:1.02;
+      letter-spacing:-1.6px;
+    }
+
+    .subtitle{
+      max-width:760px;
+      margin:0;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    @media (max-width: 900px){
+      .detail-grid,
+      .agenda{grid-template-columns:1fr}
+    }
+
+    .outcome-card,
+    .card{
+      background:var(--card);
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:24px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+      box-shadow:var(--shadow);
+    }
+
+    .outcome-card h3{
+      margin:0 0 12px;
+      font-size:17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .bean{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--brand);
+      box-shadow:0 0 0 5px rgba(64,174,89,.12);
+      flex:0 0 auto;
+    }
+
+    .outcome-box{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(64,174,89,.12), rgba(64,174,89,.06));
+      border:1px solid rgba(64,174,89,.18);
+      font-weight:700;
+    }
+
+    .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+
+    .meta-chip,
+    .duration{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(93,64,55,.14);
+      color:var(--muted);
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .instructor{margin-top:14px; margin-bottom:12px; color:var(--brand-deep); font-size:15px; font-weight:600}
+    .week-header-actions{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px 2px 14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.6px;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted)
+    }
+
+    .agenda{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 34px rgba(58,42,36,.16);
+    }
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .number{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      color:var(--brand-deep);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+      min-width:42px;
+    }
+
+    .card h4{margin:0 0 10px; font-size:23px; line-height:1.2; letter-spacing:-.02em}
+    .card p{margin:0; color:var(--muted); line-height:1.7; font-size:16px}
+
+    .details-toggle{
+      margin-top:16px;
+      cursor:pointer;
+      font-size:13px;
+      transition:background .2s ease, transform .2s ease;
+    }
+
+    .details-toggle:hover,
+    .back-link:hover{background:rgba(64,174,89,.16); transform:translateY(-1px)}
+
+    .details-panel{
+      margin-top:16px;
+      padding:18px;
+      border-radius:18px;
+      background:#fffaf3;
+      border:1px solid rgba(93,64,55,.14);
+      display:none;
+    }
+
+    .details-panel.open{display:block}
+    .details-panel h5{margin:0 0 10px; font-size:16px; color:var(--ink)}
+    .details-panel p,
+    .details-panel li{color:var(--muted); line-height:1.7; font-size:15px}
+    .details-panel ul{margin:8px 0 14px 20px; padding:0}
+
+    .answer-box{
+      margin-top:10px;
+      padding:14px;
+      background:#ffffff;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:14px;
+      color:#355242;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size:14px;
+      white-space:pre-wrap;
+    }
+
+    .callout{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(64,174,89,.10), rgba(64,174,89,.05));
+      border:1px solid rgba(64,174,89,.16);
+      color:var(--espresso);
+      font-size:14px;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="week-detail" id="week8-detail">
+      <div class="week-header-actions">
+        <div class="week-pill">☕ Analytics &amp; AI Cafe</div>
+        <a class="back-link" href="index.html">← Back to Cafe Menu</a>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <h1>Week 7 · Power Automate</h1>
+          <p class="subtitle">A hands-on session where everyone builds a simple automation to save Outlook email attachments to OneDrive for Business.</p>
+          <div class="meta">
+            <div class="meta-chip">📅 Date: 8 May 2026</div>
+            <div class="meta-chip">🧭 Format: Guided build</div>
+            <div class="meta-chip">⏱️ Total Time: 60 min</div>
+          </div>
+          <div class="instructor">Instructor: Xinran Liu</div>
+        </div>
+
+        <aside class="outcome-card">
+          <h3><span class="bean"></span> Expected outcome</h3>
+          <div class="outcome-box">Participants can create a Power Automate flow that automatically saves email attachments to OneDrive for Business and understand the basic building blocks of automation: trigger, action, and flow.</div>
+        </aside>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Menu</h2>
+          <p>Follow along, build your first flow, test it, and improve it with simple conditions.</p>
+        </div>
+      </div>
+
+      <section class="agenda">
+        <article class="card" id="power-automate-basics">
+          <div class="card-top">
+            <div class="number">1</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>What Is Power Automate?</h4>
+          <p>Learn the basic idea of automation using three simple concepts: trigger, action, and flow.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('basics-details', 'power-automate-basics')">Show details &amp; tips</button>
+          <div class="details-panel" id="basics-details">
+            <h5>Simple explanation</h5>
+            <ul>
+              <li><strong>Trigger:</strong> something happens, such as a new email arriving.</li>
+              <li><strong>Action:</strong> Power Automate does something, such as saving a file.</li>
+              <li><strong>Flow:</strong> the full automation from trigger to actions.</li>
+            </ul>
+
+            <h5>Example</h5>
+            <div class="answer-box">When a new email arrives with an attachment → save the attachment to OneDrive for Business.</div>
+
+            <div class="callout">Power Automate is not about learning every connector. It is about solving one repetitive task at a time.</div>
+          </div>
+        </article>
+
+        <article class="card" id="setup-checklist">
+          <div class="card-top">
+            <div class="number">0</div>
+            <div class="duration">Setup</div>
+          </div>
+          <h4>Before You Start</h4>
+          <p>Make sure you have the right access and a test email ready before building the flow.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('setup-details', 'setup-checklist')">Show checklist</button>
+          <div class="details-panel" id="setup-details">
+            <h5>Participant checklist</h5>
+            <ul>
+              <li>Open Power Automate at <strong>make.powerautomate.com</strong>.</li>
+              <li>Use your work account.</li>
+              <li>Make sure Outlook and OneDrive for Business are available.</li>
+              <li>Create or confirm a OneDrive folder called <strong>Email Attachments</strong>.</li>
+              <li>Prepare one test email with a small attachment.</li>
+            </ul>
+
+            <h5>Test email idea</h5>
+            <div class="answer-box">Subject: Power Automate Test
+Attachment: any small PDF, Excel, or image file</div>
+          </div>
+        </article>
+
+        <article class="card" id="build-flow">
+          <div class="card-top">
+            <div class="number">2</div>
+            <div class="duration">35 min</div>
+          </div>
+          <h4>Build: Save Email Attachments to OneDrive</h4>
+          <p>Create an automated cloud flow that watches for new Outlook emails with attachments and saves those attachments into OneDrive for Business.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('build-flow-details', 'build-flow')">Show step-by-step guide</button>
+          <div class="details-panel" id="build-flow-details">
+            <h5>Step 1: Create the flow</h5>
+            <ul>
+              <li>Go to <strong>Create</strong>.</li>
+              <li>Choose <strong>Automated cloud flow</strong>.</li>
+              <li>Name the flow <strong>Save Outlook Attachments to OneDrive</strong>.</li>
+              <li>Select trigger <strong>When a new email arrives (V3)</strong>.</li>
+            </ul>
+
+            <h5>Step 2: Configure the email trigger</h5>
+            <ul>
+              <li>Folder: <strong>Inbox</strong></li>
+              <li>Include Attachments: <strong>Yes</strong></li>
+              <li>Only with Attachments: <strong>Yes</strong></li>
+            </ul>
+
+            <h5>Step 3: Add attachment loop</h5>
+            <ul>
+              <li>Add <strong>Apply to each</strong>.</li>
+              <li>Select the email attachments dynamic content.</li>
+              <li>This is needed because one email can contain more than one attachment.</li>
+            </ul>
+
+            <h5>Step 4: Create file in OneDrive for Business</h5>
+            <ul>
+              <li>Inside the loop, add <strong>Create file</strong> from OneDrive for Business.</li>
+              <li>Folder Path: <strong>/Email Attachments</strong></li>
+              <li>File Name: <strong>Attachment Name</strong></li>
+              <li>File Content: <strong>Attachment Content</strong></li>
+            </ul>
+
+            <h5>Step 5: Save and test</h5>
+            <ul>
+              <li>Save the flow.</li>
+              <li>Send yourself an email with an attachment.</li>
+              <li>Check the run history.</li>
+              <li>Open OneDrive and confirm the file was saved.</li>
+            </ul>
+
+            <div class="callout">This is the key success moment: an attachment arrives in Outlook and appears automatically in OneDrive.</div>
+          </div>
+        </article>
+
+        <article class="card" id="improve-flow">
+          <div class="card-top">
+            <div class="number">3</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>Improve the Flow</h4>
+          <p>Add a simple filter or condition so the automation saves only the attachments you actually care about.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('improve-details', 'improve-flow')">Show improvement ideas</button>
+          <div class="details-panel" id="improve-details">
+            <h5>Choose one improvement</h5>
+            <ul>
+              <li><strong>Only save PDFs:</strong> check whether Attachment Name ends with <strong>.pdf</strong>.</li>
+              <li><strong>Only save invoice emails:</strong> filter email subject containing <strong>Invoice</strong>.</li>
+              <li><strong>Save by sender:</strong> create or use a folder based on who sent the email.</li>
+            </ul>
+
+            <h5>Example condition</h5>
+            <div class="answer-box">If Attachment Name ends with .pdf → Create file in OneDrive
+Otherwise → Do nothing</div>
+
+            <div class="callout">Automation becomes more useful when you add simple rules that match how you actually work.</div>
+          </div>
+        </article>
+
+        <article class="card" id="troubleshooting">
+          <div class="card-top">
+            <div class="number">4</div>
+            <div class="duration">5 min</div>
+          </div>
+          <h4>Troubleshooting &amp; Wrap-up</h4>
+          <p>Review common errors and reflect on other repetitive email tasks that could be automated next.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('troubleshooting-details', 'troubleshooting')">Show common issues</button>
+          <div class="details-panel" id="troubleshooting-details">
+            <h5>Common issues</h5>
+            <ul>
+              <li><strong>Attachments not saving:</strong> check Include Attachments and Only with Attachments settings.</li>
+              <li><strong>Wrong folder:</strong> check OneDrive folder path.</li>
+              <li><strong>Connector issue:</strong> reconnect Outlook or OneDrive.</li>
+              <li><strong>Duplicate files:</strong> consider adding received time or email subject to the file name.</li>
+            </ul>
+
+            <h5>Reflection question</h5>
+            <div class="answer-box">What repetitive email task do you personally want to automate next?</div>
+          </div>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    function toggleDetails(panelId, cardId) {
+      const panel = document.getElementById(panelId);
+      const button = document.querySelector(`#${cardId} .details-toggle`);
+      const isOpen = panel.classList.toggle('open');
+      button.textContent = isOpen ? 'Hide details & tips' : 'Show details & tips';
+    }
+  </script>
+</body>
+</html>
