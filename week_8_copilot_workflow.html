@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 8 · Workflow Copilot</title>
+  <style>
+    :root{
+      --brand:#40ae59;
+      --brand-deep:#2f8f47;
+      --bean:#5d4037;
+      --espresso:#3a2a24;
+      --cream:#fbf5ec;
+      --foam:#fffaf3;
+      --latte:#f2e6d7;
+      --card:#fffdf9cc;
+      --line:#d8c6b4;
+      --ink:#2c241f;
+      --muted:#6c625c;
+      --shadow:0 16px 40px rgba(58,42,36,.12);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(64,174,89,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(93,64,55,.10), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.2)),
+        linear-gradient(180deg, #fdf8f1 0%, #f7efe3 100%);
+    }
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        linear-gradient(rgba(93,64,55,.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,64,55,.35) 1px, transparent 1px);
+      background-size:22px 22px;
+      mask-image:radial-gradient(circle at center, black 45%, transparent 88%);
+    }
+
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 60px; position:relative; z-index:1}
+
+    .week-detail{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:32px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,250,243,.78)),
+        linear-gradient(180deg, rgba(64,174,89,.06), transparent);
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+
+    .week-detail:after{
+      content:"☕";
+      position:absolute;
+      right:22px;
+      top:14px;
+      font-size:64px;
+      opacity:.12;
+      transform:rotate(-8deg);
+    }
+
+    .week-pill,
+    .details-toggle,
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      border:1px solid rgba(64,174,89,.20);
+      color:var(--brand-deep);
+      font-weight:700;
+      letter-spacing:.2px;
+      text-decoration:none;
+    }
+
+    h1{
+      margin:14px 0 10px;
+      font-size:clamp(34px, 5vw, 62px);
+      line-height:1.02;
+      letter-spacing:-1.6px;
+    }
+
+    .subtitle{
+      max-width:760px;
+      margin:0;
+      font-size:18px;
+      color:var(--muted);
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    @media (max-width: 900px){
+      .detail-grid,
+      .agenda{grid-template-columns:1fr}
+    }
+
+    .outcome-card,
+    .card{
+      background:var(--card);
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:24px;
+      padding:18px;
+      backdrop-filter: blur(8px);
+      box-shadow:var(--shadow);
+    }
+
+    .outcome-card h3{
+      margin:0 0 12px;
+      font-size:17px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .bean{
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--brand);
+      box-shadow:0 0 0 5px rgba(64,174,89,.12);
+      flex:0 0 auto;
+    }
+
+    .outcome-box{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(64,174,89,.12), rgba(64,174,89,.06));
+      border:1px solid rgba(64,174,89,.18);
+      font-weight:700;
+    }
+
+    .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+
+    .meta-chip,
+    .duration{
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(93,64,55,.14);
+      color:var(--muted);
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .instructor{margin-top:14px; margin-bottom:12px; color:var(--brand-deep); font-size:15px; font-weight:600}
+    .week-header-actions{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px 2px 14px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:28px;
+      letter-spacing:-.6px;
+    }
+
+    .section-head p{
+      margin:4px 0 0;
+      color:var(--muted)
+    }
+
+    .agenda{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+    }
+
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 34px rgba(58,42,36,.16);
+    }
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:start;
+      margin-bottom:10px;
+    }
+
+    .number{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(64,174,89,.10);
+      color:var(--brand-deep);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+      min-width:42px;
+    }
+
+    .card h4{margin:0 0 10px; font-size:23px; line-height:1.2; letter-spacing:-.02em}
+    .card p{margin:0; color:var(--muted); line-height:1.7; font-size:16px}
+
+    .details-toggle{
+      margin-top:16px;
+      cursor:pointer;
+      font-size:13px;
+      transition:background .2s ease, transform .2s ease;
+    }
+
+    .details-toggle:hover,
+    .back-link:hover{background:rgba(64,174,89,.16); transform:translateY(-1px)}
+
+    .details-panel{
+      margin-top:16px;
+      padding:18px;
+      border-radius:18px;
+      background:#fffaf3;
+      border:1px solid rgba(93,64,55,.14);
+      display:none;
+    }
+
+    .details-panel.open{display:block}
+    .details-panel h5{margin:0 0 10px; font-size:16px; color:var(--ink)}
+    .details-panel p,
+    .details-panel li{color:var(--muted); line-height:1.7; font-size:15px}
+    .details-panel ul{margin:8px 0 14px 20px; padding:0}
+
+    .answer-box{
+      margin-top:10px;
+      padding:14px;
+      background:#ffffff;
+      border:1px solid rgba(93,64,55,.14);
+      border-radius:14px;
+      color:#355242;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size:14px;
+      white-space:pre-wrap;
+    }
+
+    .callout{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(64,174,89,.10), rgba(64,174,89,.05));
+      border:1px solid rgba(64,174,89,.16);
+      color:var(--espresso);
+      font-size:14px;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="week-detail" id="week8-detail">
+      <div class="week-header-actions">
+        <div class="week-pill">☕ Analytics &amp; AI Cafe</div>
+        <a class="back-link" href="index.html">← Back to Cafe Menu</a>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <h1>Week 8 · Workflow Copilot</h1>
+          <p class="subtitle">A hands-on session where participants use Workflow Copilot to create practical automations from natural language, starting with a daily calendar digest sent to Teams.</p>
+          <div class="meta">
+            <div class="meta-chip">📅 Date: 15th May 2026 3:00- 4:00 PM</div>
+            <div class="meta-chip">🧭 Format: Guided Copilot build</div>
+            <div class="meta-chip">⏱️ Total Time: 60 min</div>
+          </div>
+          <div class="instructor">Instructor: Xinran Liu</div>
+        </div>
+
+        <aside class="outcome-card">
+          <h3><span class="bean"></span> Expected outcome</h3>
+          <div class="outcome-box">Participants can use Workflow Copilot to describe, generate, review, and test a simple automation in workflow copilot, then identify practical workflow ideas for their own daily work.</div>
+        </aside>
+      </div>
+
+      <div class="section-head">
+        <div>
+          <h2>Menu</h2>
+          <p>Follow along, build a calendar digest workflow, and leave with ideas for automating your own repetitive tasks.</p>
+        </div>
+      </div>
+
+      <section class="agenda">
+        <article class="card" id="workflow-copilot-basics">
+          <div class="card-top">
+            <div class="number">1</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>What Is Workflow Copilot?</h4>
+          <p>Learn how Workflow Copilot helps you create automations by describing what you want in plain language.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('basics-details', 'workflow-copilot-basics')">Show details &amp; tips</button>
+          <div class="details-panel" id="basics-details">
+            <h5>Simple explanation</h5>
+            <ul>
+              <li><strong>Traditional workflow building:</strong> you manually choose triggers, actions, connectors, and conditions.</li>
+              <li><strong>Workflow Copilot:</strong> you describe the workflow you want, and Copilot drafts the automation steps for you.</li>
+              <li><strong>Your role:</strong> review the generated steps, check the logic, test the workflow, and adjust it if needed.</li>
+            </ul>
+
+            <h5>Key building blocks</h5>
+            <ul>
+              <li><strong>Trigger:</strong> when the workflow starts, such as a schedule or new email.</li>
+              <li><strong>Action:</strong> what happens next, such as getting calendar events or sending a Teams message.</li>
+              <li><strong>Output:</strong> the useful result, such as a reminder, digest, saved file, or notification.</li>
+            </ul>
+
+            <div class="callout">Copilot can help build the flow, but you still need to check whether the logic, data access, and output are correct.</div>
+          </div>
+        </article>
+
+        <article class="card" id="calendar-digest-demo">
+          <div class="card-top">
+            <div class="number">2</div>
+            <div class="duration">20 min</div>
+          </div>
+          <h4>Demo: Today’s Calendar Digest to Teams</h4>
+          <p>Build a workflow that runs every weekday morning, gets today’s remaining calendar events, and sends a digest to Teams.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('calendar-digest-details', 'calendar-digest-demo')">Show workflow guide</button>
+          <div class="details-panel" id="calendar-digest-details">
+            <h5>Workflow goal</h5>
+            <div class="answer-box">Every weekday morning, get today’s upcoming calendar events and send a simple digest to Teams.</div>
+
+            <h5>Step 1: Trigger</h5>
+            <ul>
+              <li>Create a scheduled workflow.</li>
+              <li>Set it to run every weekday morning.</li>
+              <li>Use Singapore time zone if prompted.</li>
+            </ul>
+            <div class="answer-box">Weekday Morning Recurrence
+Run every weekday morning at 8:30 AM Singapore time.</div>
+
+            <h5>Step 2: Get today’s calendar events</h5>
+            <p>Use M365 Copilot or calendar-related action to retrieve today’s events.</p>
+            <div class="answer-box">Find all of my calendar events scheduled for today. For each event, return only the title, start time, and end time. Do not include meeting links, join URLs, or any online meeting data. Only include events that have not yet ended as of the time this workflow runs. User's timezone: Asia/Singapore.</div>
+
+            <h5>Step 3: Send digest to Teams</h5>
+            <p>Send the output to Microsoft Teams using Chat with Flow bot or your preferred Teams destination.</p>
+            <div class="answer-box">Send a Teams message in Chat with Flow bot to me. The message should summarize today's upcoming calendar events from Get today's calendar events, listing each event's title, start time, and end time in Singapore time. Do not include meeting links or URLs. If there are no events, state: You have no upcoming events today. Format the message in clear, plain text with each event on a new line.</div>
+
+            <div class="callout">This demo shows how one workflow can combine schedule, Microsoft 365 context, and Teams notification.</div>
+          </div>
+        </article>
+
+        <article class="card" id="build-your-own-workflow">
+          <div class="card-top">
+            <div class="number">3</div>
+            <div class="duration">20 min</div>
+          </div>
+          <h4>Build Your Own Workflow</h4>
+          <p>Pick one simple workflow idea and use Copilot to generate the first version. Then review, test, and refine it.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('build-own-details', 'build-your-own-workflow')">Show workflow ideas</button>
+          <div class="details-panel" id="build-own-details">
+            <h5>How to start</h5>
+            <ul>
+              <li>Choose one repetitive task you do often.</li>
+              <li>Describe the trigger: when should the workflow start?</li>
+              <li>Describe the action: what should happen next?</li>
+              <li>Describe the output: where should the result go?</li>
+              <li>Review the generated workflow before enabling it.</li>
+            </ul>
+
+            <h5>Starter prompt</h5>
+            <div class="answer-box">Create a workflow that runs every weekday morning and sends me a Teams message with a short reminder of what I should check today.</div>
+
+            <h5>Beginner workflow ideas</h5>
+            <ul>
+              <li><strong>Daily calendar digest:</strong> send today’s remaining meetings to Teams.</li>
+              <li><strong>Email attachment reminder:</strong> notify me in Teams when an email arrives with an attachment.</li>
+              <li><strong>Weekly planning reminder:</strong> every Monday morning, send a reminder to review priorities.</li>
+              <li><strong>Meeting preparation reminder:</strong> before customer meetings, remind me to review notes and prepare questions.</li>
+              <li><strong>End-of-day wrap-up:</strong> every weekday evening, ask me to record completed tasks and blockers.</li>
+            </ul>
+
+            <div class="callout">Start small. A simple workflow that works is better than a complex workflow that nobody trusts.</div>
+          </div>
+        </article>
+
+        <article class="card" id="workflow-inspiration">
+          <div class="card-top">
+            <div class="number">4</div>
+            <div class="duration">10 min</div>
+          </div>
+          <h4>Workflow Inspiration by Team</h4>
+          <p>Explore practical workflow ideas across departments and choose one that could save time in your own work.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('inspiration-details', 'workflow-inspiration')">Show inspiration list</button>
+          <div class="details-panel" id="inspiration-details">
+            <h5>Personal productivity</h5>
+            <ul>
+              <li>Daily calendar digest</li>
+              <li>End-of-day wrap-up reminder</li>
+              <li>Meeting preparation reminder</li>
+              <li>Weekly planning prompt</li>
+            </ul>
+
+            <h5>Sales / Commercial</h5>
+            <ul>
+              <li>Notify Teams when a customer email arrives.</li>
+              <li>Summarize upcoming customer meetings each morning.</li>
+              <li>Remind account managers to follow up after meetings.</li>
+            </ul>
+
+            <h5>Finance</h5>
+            <ul>
+              <li>Notify when invoice emails arrive.</li>
+              <li>Save finance attachments to OneDrive or SharePoint.</li>
+              <li>Send weekly reminders for outstanding approvals or claims.</li>
+            </ul>
+
+            <h5>HR / People</h5>
+            <ul>
+              <li>Send onboarding checklist reminders.</li>
+              <li>Notify HR when new joiner forms arrive.</li>
+              <li>Send weekly reminders for pending training completion.</li>
+            </ul>
+
+            <h5>Analytics / Reporting</h5>
+            <ul>
+              <li>Remind report owners before weekly reporting deadlines.</li>
+              <li>Notify Teams when a report file is updated.</li>
+              <li>Send recurring data quality check reminders.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card" id="best-practices">
+          <div class="card-top">
+            <div class="number">5</div>
+            <div class="duration">Wrap-up</div>
+          </div>
+          <h4>Best Practices &amp; Common Mistakes</h4>
+          <p>Learn how to review a Copilot-generated workflow before trusting it in real work.</p>
+          <button class="details-toggle" type="button" onclick="toggleDetails('best-practices-details', 'best-practices')">Show checklist</button>
+          <div class="details-panel" id="best-practices-details">
+            <h5>Best practices</h5>
+            <ul>
+              <li>Start with one clear task.</li>
+              <li>Use specific instructions and clear step names.</li>
+              <li>Test with your own account before sending to a group.</li>
+              <li>Check whether the workflow includes unnecessary sensitive data.</li>
+              <li>Review the run history after testing.</li>
+            </ul>
+
+            <h5>Common mistakes</h5>
+            <ul>
+              <li>The trigger is too broad and runs too often.</li>
+              <li>The Teams message includes too much detail.</li>
+              <li>The workflow sends to the wrong person or channel.</li>
+              <li>The user enables the workflow without testing it first.</li>
+            </ul>
+
+            <div class="callout">Workflow Copilot helps you build faster, but responsible review is still part of the job.</div>
+          </div>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    function toggleDetails(panelId, cardId) {
+      const panel = document.getElementById(panelId);
+      const button = document.querySelector(`#${cardId} .details-toggle`);
+      const isOpen = panel.classList.toggle('open');
+      button.textContent = isOpen ? 'Hide details & tips' : 'Show details & tips';
+    }
+  </script>
+</body>
+</html>
